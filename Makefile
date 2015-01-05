@@ -19,7 +19,7 @@ endif
 CUCKOOSRC = $(wildcard *.c)
 CUCKOOOBJ = $(CUCKOOSRC:%.c=$(OBJDIR)/%.o)
 
-CAPSTONELIB = capstone/capstone.lib
+CAPSTONELIB = capstone/libcapstone.a
 
 BSONSRC = bson/bson.c bson/encoding.c bson/numbers.c
 BSONOBJ = $(OBJDIR)/bson/bson.o $(OBJDIR)/bson/encoding.o $(OBJDIR)/bson/numbers.o
