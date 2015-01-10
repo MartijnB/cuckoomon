@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // the size of the logging buffer
 #define BUFFERSIZE 1024 * 1024
 #define BUFFER_LOG_MAX 256
+#define BUFFER_LOG_MAX_BIG 512 * 1024
 
 static CRITICAL_SECTION g_mutex;
 static int g_sock;
@@ -201,6 +202,16 @@ static void log_buffer(const char *buf, size_t length) {
     bson_append_binary( g_bson, g_istr, BSON_BIN_BINARY, buf, trunclength );
 }
 
+static void log_big_buffer(const char *buf, size_t length) {
+    size_t trunclength = min(length, BUFFER_LOG_MAX_BIG);
+
+    if (buf == NULL) {
+        trunclength = 0;
+    }
+
+    bson_append_binary( g_bson, g_istr, BSON_BIN_BINARY, buf, trunclength );
+}
+
 void loq(int index, const char *category, const char *name,
     int is_success, int return_value, const char *fmt, ...)
 {
@@ -269,11 +280,11 @@ void loq(int index, const char *category, const char *name,
                 (void) va_arg(args, int);
                 (void) va_arg(args, const wchar_t *);
             }
-            else if(key == 'b') {
+            else if(key == 'b' || key == 'd') {
                 (void) va_arg(args, size_t);
                 (void) va_arg(args, const char *);
             }
-            else if(key == 'B') {
+            else if(key == 'B' || key == 'D') {
                 (void) va_arg(args, size_t *);
                 (void) va_arg(args, const char *);
             }
@@ -378,6 +389,16 @@ void loq(int index, const char *category, const char *name,
             size_t *len = va_arg(args, size_t *);
             const char *s = va_arg(args, const char *);
             log_buffer(s, len == NULL ? 0 : *len);
+        }
+        else if(key == 'd') {
+            size_t len = va_arg(args, size_t);
+            const char *s = va_arg(args, const char *);
+            log_big_buffer(s, len);
+        }
+        else if(key == 'D') {
+            size_t *len = va_arg(args, size_t *);
+            const char *s = va_arg(args, const char *);
+            log_big_buffer(s, len == NULL ? 0 : *len);
         }
         else if(key == 'i') {
             int value = va_arg(args, int);
