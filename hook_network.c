@@ -28,6 +28,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 static const char *category = "network";
 static IS_SUCCESS_HINTERNET();
 
+HOOKDEF(HRESULT, WINAPI, URLDownloadToFileA,
+    LPUNKNOWN pCaller,
+    LPCTSTR szURL,
+    LPCTSTR szFileName,
+    DWORD dwReserved,
+    LPVOID lpfnCB
+) {
+    IS_SUCCESS_HRESULT();
+
+    HRESULT ret = Old_URLDownloadToFileA(pCaller, szURL, szFileName,
+        dwReserved, lpfnCB);
+    LOQ("ss", "URL", szURL, "FileName", szFileName);
+    if(ret == S_OK) {
+        pipe("FILE_NEW:%S", szFileName);
+    }
+    return ret;
+}
+
 HOOKDEF(HRESULT, WINAPI, URLDownloadToFileW,
     LPUNKNOWN pCaller,
     LPWSTR szURL,
@@ -151,6 +169,137 @@ HOOKDEF(HINTERNET, WINAPI, InternetOpenUrlW,
     return ret;
 }
 
+HOOKDEF(HINTERNET, WINAPI, FtpOpenFileA,
+    _In_  HINTERNET hConnect,
+    _In_  LPCTSTR lpszFileName,
+    _In_  DWORD dwAccess,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+) {
+    // Disable cache
+    dwFlags |= INTERNET_FLAG_RELOAD;
+
+    HINTERNET ret = Old_FtpOpenFileA(hConnect, lpszFileName, dwAccess,
+        dwFlags, dwContext);
+    LOQ("psll", "InternetHandle", hConnect, "Filename", lpszFileName,
+        "Access", dwAccess, "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(HINTERNET, WINAPI, FtpOpenFileW,
+    _In_  HINTERNET hConnect,
+    _In_  LPWSTR lpszFileName,
+    _In_  DWORD dwAccess,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+) {
+    // Disable cache
+    dwFlags |= INTERNET_FLAG_RELOAD;
+    
+    HINTERNET ret = Old_FtpOpenFileW(hConnect, lpszFileName, dwAccess,
+        dwFlags, dwContext);
+    LOQ("pull", "InternetHandle", hConnect, "Filename", lpszFileName,
+        "Access", dwAccess, "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(HINTERNET, WINAPI, FtpGetFileA,
+    _In_  HINTERNET hConnect,
+    _In_  LPCTSTR lpszRemoteFile,
+    _In_  LPCTSTR lpszNewFile,
+    _In_  BOOL fFailIfExists,
+    _In_  DWORD dwFlagsAndAttributes,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+) {
+    HINTERNET ret = Old_FtpGetFileA(hConnect, lpszRemoteFile, lpszNewFile,
+        fFailIfExists, dwFlagsAndAttributes, dwFlags, dwContext);
+    LOQ("pssll", "InternetHandle", hConnect, 
+        "RemoteFile", lpszRemoteFile, 
+        "NewFile", lpszNewFile,
+        "FlagsAndAttributes", dwFlagsAndAttributes,
+        "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(HINTERNET, WINAPI, FtpGetFileW,
+    _In_  HINTERNET hConnect,
+    _In_  LPWSTR lpszRemoteFile,
+    _In_  LPWSTR lpszNewFile,
+    _In_  BOOL fFailIfExists,
+    _In_  DWORD dwFlagsAndAttributes,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+) {
+    HINTERNET ret = Old_FtpGetFileW(hConnect, lpszRemoteFile, lpszNewFile,
+        fFailIfExists, dwFlagsAndAttributes, dwFlags, dwContext);
+    LOQ("puull", "InternetHandle", hConnect, 
+        "RemoteFile", lpszRemoteFile, 
+        "NewFile", lpszNewFile,
+        "FlagsAndAttributes", dwFlagsAndAttributes,
+        "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(HINTERNET, WINAPI, FtpPutFileA,
+    _In_  HINTERNET hConnect,
+    _In_  LPCTSTR lpszLocalFile,
+    _In_  LPCTSTR lpszNewRemoteFile,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+) {
+    HINTERNET ret = Old_FtpPutFileA(hConnect, lpszLocalFile, 
+        lpszNewRemoteFile, dwFlags, dwContext);
+    LOQ("pssl", "InternetHandle", hConnect, 
+        "LocalFile", lpszLocalFile,
+        "NewRemoteFile", lpszNewRemoteFile, 
+        "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(HINTERNET, WINAPI, FtpPutFileW,
+    _In_  HINTERNET hConnect,
+    _In_  LPWSTR lpszLocalFile,
+    _In_  LPWSTR lpszNewRemoteFile,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+) {
+    HINTERNET ret = Old_FtpPutFileW(hConnect, lpszLocalFile, 
+        lpszNewRemoteFile, dwFlags, dwContext);
+    LOQ("puul", "InternetHandle", hConnect, 
+        "LocalFile", lpszLocalFile,
+        "NewRemoteFile", lpszNewRemoteFile, 
+        "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(HINTERNET, WINAPI, HttpAddRequestHeadersA,
+    _In_  HINTERNET hConnect,
+    _In_  LPCTSTR lpszHeaders,
+    _In_  DWORD dwHeadersLength,
+    _In_  DWORD dwModifiers
+) {
+    HINTERNET ret = Old_HttpAddRequestHeadersA(hConnect, lpszHeaders, 
+        dwHeadersLength, dwModifiers);
+    if(dwHeadersLength == (DWORD) -1) dwHeadersLength = strlen(lpszHeaders);
+    LOQ("pSp", "InternetHandle", hConnect, 
+        "Headers", dwHeadersLength, lpszHeaders, "Modifiers", dwModifiers);
+    return ret;
+}
+
+HOOKDEF(HINTERNET, WINAPI, HttpAddRequestHeadersW,
+    _In_  HINTERNET hConnect,
+    _In_  LPWSTR lpszHeaders,
+    _In_  DWORD dwHeadersLength,
+    _In_  DWORD dwModifiers
+) {
+    HINTERNET ret = Old_HttpAddRequestHeadersW(hConnect, lpszHeaders, 
+        dwHeadersLength, dwModifiers);
+    LOQ("pUp", "InternetHandle", hConnect, 
+        "Headers", dwHeadersLength, lpszHeaders, "Modifiers", dwModifiers);
+    return ret;
+}
+
 HOOKDEF(HINTERNET, WINAPI, HttpOpenRequestA,
     __in  HINTERNET hConnect,
     __in  LPCTSTR lpszVerb,
@@ -234,6 +383,37 @@ HOOKDEF(BOOL, WINAPI, HttpSendRequestW,
     return ret;
 }
 
+HOOKDEF(BOOL, WINAPI, HttpSendRequestEx,
+    _In_   HINTERNET hRequest,
+    _In_   LPINTERNET_BUFFERS lpBuffersIn,
+    _Out_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_   DWORD dwFlags,
+    _In_   DWORD_PTR dwContext
+) {
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_HttpSendRequestEx(hRequest, lpBuffersIn, lpBuffersOut,
+        dwFlags, dwContext);
+    LOQ("pl", "HttpHandle", hRequest, 
+        "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, HttpEndRequest,
+    _In_       HINTERNET hRequest,
+    _Out_opt_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_       DWORD dwFlags,
+    _In_opt_   DWORD_PTR dwContext
+) {
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_HttpEndRequest(hRequest, lpBuffersOut, dwFlags, 
+        dwContext);
+    LOQ("pl", "HttpHandle", hRequest, 
+        "Flags", dwFlags);
+    return ret;
+}
+
 HOOKDEF(BOOL, WINAPI, InternetReadFile,
     _In_   HINTERNET hFile,
     _Out_  LPVOID lpBuffer,
@@ -246,6 +426,21 @@ HOOKDEF(BOOL, WINAPI, InternetReadFile,
         lpdwNumberOfBytesRead);
     LOQ("pD", "InternetHandle", hFile,
         "Buffer", lpdwNumberOfBytesRead, lpBuffer);
+    return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, InternetReadFileEx,
+    _In_   HINTERNET hFile,
+    _Out_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_   DWORD dwFlags,
+    _In_   DWORD_PTR dwContext
+) {
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_InternetReadFileEx(hFile, lpBuffersOut, dwFlags, 
+        dwContext);
+    LOQ("pl", "InternetHandle", hFile, 
+        "Flags", dwFlags);
     return ret;
 }
 

@@ -1064,6 +1064,14 @@ extern HOOKDEF(BOOL, WINAPI, GetUserNameW,
 // Network Hooks
 //
 
+extern HOOKDEF(HRESULT, WINAPI, URLDownloadToFileA,
+    LPUNKNOWN pCaller,
+    LPCTSTR szURL,
+    LPCTSTR szFileName,
+    DWORD dwReserved,
+    LPVOID lpfnCB
+);
+
 extern HOOKDEF(HRESULT, WINAPI, URLDownloadToFileW,
     LPUNKNOWN pCaller,
     LPWSTR szURL,
@@ -1128,6 +1136,72 @@ extern HOOKDEF(HINTERNET, WINAPI, InternetOpenUrlW,
     __in  DWORD_PTR dwContext
 );
 
+extern HOOKDEF(HINTERNET, WINAPI, FtpOpenFileA,
+    _In_  HINTERNET hConnect,
+    _In_  LPCTSTR lpszFileName,
+    _In_  DWORD dwAccess,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+);
+
+extern HOOKDEF(HINTERNET, WINAPI, FtpOpenFileW,
+    _In_  HINTERNET hConnect,
+    _In_  LPWSTR lpszFileName,
+    _In_  DWORD dwAccess,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+);
+
+extern HOOKDEF(HINTERNET, WINAPI, FtpGetFileA,
+    _In_  HINTERNET hConnect,
+    _In_  LPCTSTR lpszRemoteFile,
+    _In_  LPCTSTR lpszNewFile,
+    _In_  BOOL fFailIfExists,
+    _In_  DWORD dwFlagsAndAttributes,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+);
+
+extern HOOKDEF(HINTERNET, WINAPI, FtpGetFileW,
+    _In_  HINTERNET hConnect,
+    _In_  LPWSTR lpszRemoteFile,
+    _In_  LPWSTR lpszNewFile,
+    _In_  BOOL fFailIfExists,
+    _In_  DWORD dwFlagsAndAttributes,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+);
+
+extern HOOKDEF(HINTERNET, WINAPI, FtpPutFileA,
+    _In_  HINTERNET hConnect,
+    _In_  LPCTSTR lpszLocalFile,
+    _In_  LPCTSTR lpszNewRemoteFile,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+);
+
+extern HOOKDEF(HINTERNET, WINAPI, FtpPutFileW,
+    _In_  HINTERNET hConnect,
+    _In_  LPWSTR lpszLocalFile,
+    _In_  LPWSTR lpszNewRemoteFile,
+    _In_  DWORD dwFlags,
+    _In_  DWORD_PTR dwContext
+);
+
+extern HOOKDEF(HINTERNET, WINAPI, HttpAddRequestHeadersA,
+    _In_  HINTERNET hConnect,
+    _In_  LPCTSTR lpszHeaders,
+    _In_  DWORD dwHeadersLength,
+    _In_  DWORD dwModifiers
+);
+
+extern HOOKDEF(HINTERNET, WINAPI, HttpAddRequestHeadersW,
+    _In_  HINTERNET hConnect,
+    _In_  LPWSTR lpszHeaders,
+    _In_  DWORD dwHeadersLength,
+    _In_  DWORD dwModifiers
+);
+
 extern HOOKDEF(HINTERNET, WINAPI, HttpOpenRequestA,
     __in  HINTERNET hConnect,
     __in  LPCTSTR lpszVerb,
@@ -1166,11 +1240,33 @@ extern HOOKDEF(BOOL, WINAPI, HttpSendRequestW,
     __in  DWORD dwOptionalLength
 );
 
+extern HOOKDEF(BOOL, WINAPI, HttpSendRequestEx,
+    _In_   HINTERNET hRequest,
+    _In_   LPINTERNET_BUFFERS lpBuffersIn,
+    _Out_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_   DWORD dwFlags,
+    _In_   DWORD_PTR dwContext
+);
+
+extern HOOKDEF(BOOL, WINAPI, HttpEndRequest,
+    _In_       HINTERNET hRequest,
+    _Out_opt_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_       DWORD dwFlags,
+    _In_opt_   DWORD_PTR dwContext
+);
+
 extern HOOKDEF(BOOL, WINAPI, InternetReadFile,
     _In_   HINTERNET hFile,
     _Out_  LPVOID lpBuffer,
     _In_   DWORD dwNumberOfBytesToRead,
     _Out_  LPDWORD lpdwNumberOfBytesRead
+);
+
+extern HOOKDEF(BOOL, WINAPI, InternetReadFileEx,
+    _In_   HINTERNET hFile,
+    _Out_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_   DWORD dwFlags,
+    _In_   DWORD_PTR dwContext
 );
 
 extern HOOKDEF(BOOL, WINAPI, InternetWriteFile,
