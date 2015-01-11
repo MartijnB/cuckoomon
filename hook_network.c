@@ -166,7 +166,11 @@ HOOKDEF(HINTERNET, WINAPI, HttpOpenRequestA,
 
     HINTERNET ret = Old_HttpOpenRequestA(hConnect, lpszVerb, lpszObjectName,
         lpszVersion, lpszReferer, lplpszAcceptTypes, dwFlags, dwContext);
-    LOQ("psl", "InternetHandle", hConnect, "Path", lpszObjectName,
+    LOQ("pssssl", "InternetHandle", hConnect, 
+        "Verb", lpszVerb,
+        "Path", lpszObjectName,
+        "Version", lpszVersion,
+        "Referer", lpszReferer,
         "Flags", dwFlags);
     return ret;
 }
@@ -186,7 +190,11 @@ HOOKDEF(HINTERNET, WINAPI, HttpOpenRequestW,
 
     HINTERNET ret = Old_HttpOpenRequestW(hConnect, lpszVerb, lpszObjectName,
         lpszVersion, lpszReferer, lplpszAcceptTypes, dwFlags, dwContext);
-    LOQ("pul", "InternetHandle", hConnect, "Path", lpszObjectName,
+    LOQ("puuuul", "InternetHandle", hConnect, 
+        "Verb", lpszVerb,
+        "Path", lpszObjectName,
+        "Version", lpszVersion,
+        "Referer", lpszReferer,
         "Flags", dwFlags);
     return ret;
 }
