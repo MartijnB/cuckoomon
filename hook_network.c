@@ -122,6 +122,9 @@ HOOKDEF(HINTERNET, WINAPI, InternetOpenUrlA,
     __in  DWORD dwFlags,
     __in  DWORD_PTR dwContext
 ) {
+    // Disable cache
+    dwFlags |= INTERNET_FLAG_RELOAD;
+
     HINTERNET ret = Old_InternetOpenUrlA(hInternet, lpszUrl, lpszHeaders,
         dwHeadersLength, dwFlags, dwContext);
     if(dwHeadersLength == (DWORD) -1) dwHeadersLength = strlen(lpszHeaders);
@@ -138,6 +141,9 @@ HOOKDEF(HINTERNET, WINAPI, InternetOpenUrlW,
     __in  DWORD dwFlags,
     __in  DWORD_PTR dwContext
 ) {
+    // Disable cache
+    dwFlags |= INTERNET_FLAG_RELOAD;
+
     HINTERNET ret = Old_InternetOpenUrlW(hInternet, lpszUrl, lpszHeaders,
         dwHeadersLength, dwFlags, dwContext);
     LOQ("puUp", "ConnectionHandle", hInternet, "URL", lpszUrl,
@@ -155,6 +161,9 @@ HOOKDEF(HINTERNET, WINAPI, HttpOpenRequestA,
     __in  DWORD dwFlags,
     __in  DWORD_PTR dwContext
 ) {
+    // Disable cache
+    dwFlags |= INTERNET_FLAG_RELOAD;
+
     HINTERNET ret = Old_HttpOpenRequestA(hConnect, lpszVerb, lpszObjectName,
         lpszVersion, lpszReferer, lplpszAcceptTypes, dwFlags, dwContext);
     LOQ("psl", "InternetHandle", hConnect, "Path", lpszObjectName,
@@ -172,6 +181,9 @@ HOOKDEF(HINTERNET, WINAPI, HttpOpenRequestW,
     __in  DWORD dwFlags,
     __in  DWORD_PTR dwContext
 ) {
+    // Disable cache
+    dwFlags |= INTERNET_FLAG_RELOAD;
+
     HINTERNET ret = Old_HttpOpenRequestW(hConnect, lpszVerb, lpszObjectName,
         lpszVersion, lpszReferer, lplpszAcceptTypes, dwFlags, dwContext);
     LOQ("pul", "InternetHandle", hConnect, "Path", lpszObjectName,
