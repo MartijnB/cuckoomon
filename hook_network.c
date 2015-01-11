@@ -203,7 +203,7 @@ HOOKDEF(BOOL, WINAPI, HttpSendRequestA,
     BOOL ret = Old_HttpSendRequestA(hRequest, lpszHeaders, dwHeadersLength,
         lpOptional, dwOptionalLength);
     if(dwHeadersLength == (DWORD) -1) dwHeadersLength = strlen(lpszHeaders);
-    LOQ("pSb", "RequestHandle", hRequest,
+    LOQ("pSd", "RequestHandle", hRequest,
         "Headers", dwHeadersLength, lpszHeaders,
         "PostData", dwOptionalLength, lpOptional);
     return ret;
@@ -220,7 +220,7 @@ HOOKDEF(BOOL, WINAPI, HttpSendRequestW,
 
     BOOL ret = Old_HttpSendRequestW(hRequest, lpszHeaders, dwHeadersLength,
         lpOptional, dwOptionalLength);
-    LOQ("pUb", "RequestHandle", hRequest,
+    LOQ("pUd", "RequestHandle", hRequest,
         "Headers", dwHeadersLength, lpszHeaders,
         "PostData", dwOptionalLength, lpOptional);
     return ret;
@@ -236,7 +236,7 @@ HOOKDEF(BOOL, WINAPI, InternetReadFile,
 
     BOOL ret = Old_InternetReadFile(hFile, lpBuffer, dwNumberOfBytesToRead,
         lpdwNumberOfBytesRead);
-    LOQ("pB", "InternetHandle", hFile,
+    LOQ("pD", "InternetHandle", hFile,
         "Buffer", lpdwNumberOfBytesRead, lpBuffer);
     return ret;
 }
@@ -251,7 +251,7 @@ HOOKDEF(BOOL, WINAPI, InternetWriteFile,
 
     BOOL ret = Old_InternetWriteFile(hFile, lpBuffer, dwNumberOfBytesToWrite,
         lpdwNumberOfBytesWritten);
-    LOQ("pB", "InternetHandle", hFile,
+    LOQ("pD", "InternetHandle", hFile,
         "Buffer", lpdwNumberOfBytesWritten, lpBuffer);
     return ret;
 }
