@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #undef CUCKOODBG
 #define CUCKOODBG 1
 #else
-#define CUCKOODBG 0
+#define CUCKOODBG 1
 #endif
 
 #define HOOK(library, funcname) {L###library, #funcname, NULL, \
@@ -65,17 +65,17 @@ static hook_t g_hooks[] = {
     //
     // File Hooks
     //
-
+/*
     HOOK(ntdll, NtCreateFile),
     HOOK(ntdll, NtOpenFile),
-    HOOK(ntdll, NtReadFile),
+    //HOOK(ntdll, NtReadFile),
     HOOK(ntdll, NtWriteFile),
     HOOK(ntdll, NtDeleteFile),
-    HOOK(ntdll, NtDeviceIoControlFile),
-    HOOK(ntdll, NtQueryDirectoryFile),
-    HOOK(ntdll, NtQueryInformationFile),
+    //HOOK(ntdll, NtDeviceIoControlFile),
+    //HOOK(ntdll, NtQueryDirectoryFile),
+    //HOOK(ntdll, NtQueryInformationFile),
     HOOK(ntdll, NtSetInformationFile),
-    HOOK(ntdll, NtOpenDirectoryObject),
+    //HOOK(ntdll, NtOpenDirectoryObject),
     HOOK(ntdll, NtCreateDirectoryObject),
 
     // CreateDirectoryExA calls CreateDirectoryExW
@@ -89,8 +89,8 @@ static hook_t g_hooks[] = {
     // lowest variant of MoveFile()
     HOOK(kernel32, MoveFileWithProgressW),
 
-    HOOK(kernel32, FindFirstFileExA),
-    HOOK(kernel32, FindFirstFileExW),
+    //HOOK(kernel32, FindFirstFileExA),
+    //HOOK(kernel32, FindFirstFileExW),
 
     // Covered by NtCreateFile() but still grap this information
     HOOK(kernel32, CopyFileA),
@@ -101,10 +101,10 @@ static hook_t g_hooks[] = {
     HOOK(kernel32, DeleteFileA),
     HOOK(kernel32, DeleteFileW),
 
-    HOOK(kernel32, GetDiskFreeSpaceExA),
-    HOOK(kernel32, GetDiskFreeSpaceExW),
-    HOOK(kernel32, GetDiskFreeSpaceA),
-    HOOK(kernel32, GetDiskFreeSpaceW),
+    //HOOK(kernel32, GetDiskFreeSpaceExA),
+    //HOOK(kernel32, GetDiskFreeSpaceExW),
+    //HOOK(kernel32, GetDiskFreeSpaceA),
+    //HOOK(kernel32, GetDiskFreeSpaceW),
 
     //
     // Registry Hooks
@@ -126,24 +126,24 @@ static hook_t g_hooks[] = {
 
     // RegEnumKeyA() calls RegEnumKeyExA(), but RegEnumKeyW() does *not*
     // call RegEnumKeyExW()
-    HOOK(advapi32, RegEnumKeyW),
-    HOOK(advapi32, RegEnumKeyExA),
-    HOOK(advapi32, RegEnumKeyExW),
+    //HOOK(advapi32, RegEnumKeyW),
+    //HOOK(advapi32, RegEnumKeyExA),
+    //HOOK(advapi32, RegEnumKeyExW),
 
-    HOOK(advapi32, RegEnumValueA),
-    HOOK(advapi32, RegEnumValueW),
+    //HOOK(advapi32, RegEnumValueA),
+    //HOOK(advapi32, RegEnumValueW),
 
     HOOK(advapi32, RegSetValueExA),
     HOOK(advapi32, RegSetValueExW),
 
-    HOOK(advapi32, RegQueryValueExA),
-    HOOK(advapi32, RegQueryValueExW),
+    //HOOK(advapi32, RegQueryValueExA),
+    //HOOK(advapi32, RegQueryValueExW),
 
     HOOK(advapi32, RegDeleteValueA),
     HOOK(advapi32, RegDeleteValueW),
 
-    HOOK(advapi32, RegQueryInfoKeyA),
-    HOOK(advapi32, RegQueryInfoKeyW),
+    //HOOK(advapi32, RegQueryInfoKeyA),
+    //HOOK(advapi32, RegQueryInfoKeyW),
 
     HOOK(advapi32, RegCloseKey),
 
@@ -156,17 +156,17 @@ static hook_t g_hooks[] = {
     HOOK(ntdll, NtOpenKeyEx),
     HOOK(ntdll, NtRenameKey),
     HOOK(ntdll, NtReplaceKey),
-    HOOK(ntdll, NtEnumerateKey),
-    HOOK(ntdll, NtEnumerateValueKey),
+    //HOOK(ntdll, NtEnumerateKey),
+    //HOOK(ntdll, NtEnumerateValueKey),
     HOOK(ntdll, NtSetValueKey),
-    HOOK(ntdll, NtQueryValueKey),
-    HOOK(ntdll, NtQueryMultipleValueKey),
+    //HOOK(ntdll, NtQueryValueKey),
+    //HOOK(ntdll, NtQueryMultipleValueKey),
     HOOK(ntdll, NtDeleteKey),
     HOOK(ntdll, NtDeleteValueKey),
-    HOOK(ntdll, NtLoadKey),
-    HOOK(ntdll, NtLoadKey2),
-    HOOK(ntdll, NtLoadKeyEx),
-    HOOK(ntdll, NtQueryKey),
+    //HOOK(ntdll, NtLoadKey),
+    //HOOK(ntdll, NtLoadKey2),
+    //HOOK(ntdll, NtLoadKeyEx),
+    //HOOK(ntdll, NtQueryKey),
     HOOK(ntdll, NtSaveKey),
     HOOK(ntdll, NtSaveKeyEx),
 
@@ -174,18 +174,18 @@ static hook_t g_hooks[] = {
     // Window Hooks
     //
 
-    HOOK(user32, FindWindowA),
-    HOOK(user32, FindWindowW),
-    HOOK(user32, FindWindowExA),
-    HOOK(user32, FindWindowExW),
-    HOOK(user32, EnumWindows),
+    //HOOK(user32, FindWindowA),
+    //HOOK(user32, FindWindowW),
+    //HOOK(user32, FindWindowExA),
+    //HOOK(user32, FindWindowExW),
+    //HOOK(user32, EnumWindows),
 
     //
     // Sync Hooks
     //
 
     HOOK(ntdll, NtCreateMutant),
-    HOOK(ntdll, NtOpenMutant),
+    //HOOK(ntdll, NtOpenMutant),
     HOOK(ntdll, NtCreateNamedPipeFile),
 
     //
@@ -201,14 +201,14 @@ static hook_t g_hooks[] = {
     HOOK(ntdll, NtCreateSection),
     HOOK(ntdll, NtMakeTemporaryObject),
     HOOK(ntdll, NtMakePermanentObject),
-    HOOK(ntdll, NtOpenSection),
+    //HOOK(ntdll, NtOpenSection),
     //HOOK(kernel32, CreateProcessInternalW),
-    HOOK(ntdll, ZwMapViewOfSection),
-    HOOK(kernel32, ExitProcess),
+    //HOOK(ntdll, ZwMapViewOfSection),
+    //HOOK(kernel32, ExitProcess),
 
     // all variants of ShellExecute end up in ShellExecuteExW
     HOOK(shell32, ShellExecuteExW),
-    HOOK(ntdll, NtUnmapViewOfSection),
+    //HOOK(ntdll, NtUnmapViewOfSection),
     // HOOK(ntdll, NtAllocateVirtualMemory),
     HOOK(ntdll, NtReadVirtualMemory),
     HOOK(kernel32, ReadProcessMemory),
@@ -216,7 +216,7 @@ static hook_t g_hooks[] = {
     HOOK(kernel32, WriteProcessMemory),
     HOOK(ntdll, NtProtectVirtualMemory),
     HOOK(kernel32, VirtualProtectEx),
-    HOOK(ntdll, NtFreeVirtualMemory),
+    //HOOK(ntdll, NtFreeVirtualMemory),
     //HOOK(kernel32, VirtualFreeEx),
 
     HOOK(msvcrt, system),
@@ -242,31 +242,32 @@ static hook_t g_hooks[] = {
     // Misc Hooks
     //
 
-    HOOK(user32, SetWindowsHookExA),
-    HOOK(user32, SetWindowsHookExW),
-    HOOK(user32, UnhookWindowsHookEx),
+    //HOOK(user32, SetWindowsHookExA),
+    //HOOK(user32, SetWindowsHookExW),
+    //HOOK(user32, UnhookWindowsHookEx),
     HOOK(kernel32, SetUnhandledExceptionFilter),
     //HOOK(ntdll, LdrLoadDll),
-    HOOK(ntdll, LdrGetDllHandle),
-    HOOK(ntdll, LdrGetProcedureAddress),
+    //HOOK(ntdll, LdrGetDllHandle),
+    //HOOK(ntdll, LdrGetProcedureAddress),
     HOOK(kernel32, DeviceIoControl),
-    HOOK(user32, ExitWindowsEx),
+    //HOOK(user32, ExitWindowsEx),
     HOOK(kernel32, IsDebuggerPresent),
-    HOOK(advapi32, LookupPrivilegeValueW),
-    //HOOK(ntdll, NtClose),
-    HOOK(kernel32, WriteConsoleA),
-    HOOK(kernel32, WriteConsoleW),
-    HOOK(user32, GetSystemMetrics),
-    HOOK(user32, GetCursorPos),
-    HOOK(kernel32, GetComputerNameA),
-    HOOK(kernel32, GetComputerNameW),
-    HOOK(advapi32, GetUserNameA),
-    HOOK(advapi32, GetUserNameW),
+    //HOOK(advapi32, LookupPrivilegeValueW),
+    HOOK(ntdll, NtClose),
+    //HOOK(kernel32, WriteConsoleA),
+    //HOOK(kernel32, WriteConsoleW),
+    //HOOK(user32, GetSystemMetrics),
+    //HOOK(user32, GetCursorPos),
+    //HOOK(kernel32, GetComputerNameA),
+    //HOOK(kernel32, GetComputerNameW),
+    //HOOK(advapi32, GetUserNameA),
+    //HOOK(advapi32, GetUserNameW),
 
     //
     // Network Hooks
     //
-
+*/
+    //HOOK(urlmon, URLDownloadToFileA),
     HOOK(urlmon, URLDownloadToFileW),
     HOOK(wininet, InternetOpenA),
     HOOK(wininet, InternetOpenW),
@@ -274,14 +275,35 @@ static hook_t g_hooks[] = {
     HOOK(wininet, InternetConnectW),
     HOOK(wininet, InternetOpenUrlA),
     HOOK(wininet, InternetOpenUrlW),
+
+    HOOK(wininet, InternetReadFile),
+    HOOK(wininet, InternetReadFileExA),
+    HOOK(wininet, InternetReadFileExW),
+    HOOK(wininet, InternetWriteFile),
+    HOOK(wininet, InternetCloseHandle),
+
+    //HOOK(wininet, FtpOpenFileA),
+    //HOOK(wininet, FtpOpenFileW),
+    //HOOK(wininet, FtpGetFileA),
+    //HOOK(wininet, FtpGetFileW),
+    //HOOK(wininet, FtpPutFileA),
+    //HOOK(wininet, FtpPutFileW),
+
+    HOOK(wininet, HttpAddRequestHeadersA),
+    HOOK(wininet, HttpAddRequestHeadersW),
     HOOK(wininet, HttpOpenRequestA),
     HOOK(wininet, HttpOpenRequestW),
     HOOK(wininet, HttpSendRequestA),
     HOOK(wininet, HttpSendRequestW),
-    HOOK(wininet, InternetReadFile),
-    HOOK(wininet, InternetWriteFile),
-    HOOK(wininet, InternetCloseHandle),
-
+    HOOK(wininet, HttpSendRequestExA),
+    HOOK(wininet, HttpSendRequestExW),
+    HOOK(wininet, HttpEndRequestA),
+    HOOK(wininet, HttpEndRequestW),
+    HOOK(wininet, HttpQueryInfoA),
+    HOOK(wininet, HttpQueryInfoW),
+    HOOK(wininet, InternetConfirmZoneCrossingA),
+    HOOK(wininet, InternetConfirmZoneCrossingW),
+/*
     HOOK(dnsapi, DnsQuery_A),
     HOOK(dnsapi, DnsQuery_UTF8),
     HOOK(dnsapi, DnsQuery_W),
@@ -307,11 +329,11 @@ static hook_t g_hooks[] = {
     // Sleep Hooks
     //
 
-    HOOK(ntdll, NtDelayExecution),
-    HOOK(kernel32, GetLocalTime),
-    HOOK(kernel32, GetSystemTime),
-    HOOK(kernel32, GetTickCount),
-    HOOK(ntdll, NtQuerySystemTime),
+    //HOOK(ntdll, NtDelayExecution),
+    //HOOK(kernel32, GetLocalTime),
+    //HOOK(kernel32, GetSystemTime),
+    //HOOK(kernel32, GetTickCount),
+    //HOOK(ntdll, NtQuerySystemTime),
 
     //
     // Socket Hooks
@@ -321,28 +343,28 @@ static hook_t g_hooks[] = {
     HOOK(ws2_32, gethostbyname),
     HOOK(ws2_32, socket),
     HOOK(ws2_32, connect),
-    HOOK(ws2_32, send),
-    HOOK(ws2_32, sendto),
-    HOOK(ws2_32, recv),
-    HOOK(ws2_32, recvfrom),
+    //HOOK(ws2_32, send),
+    //HOOK(ws2_32, sendto),
+    //HOOK(ws2_32, recv),
+    //HOOK(ws2_32, recvfrom),
     HOOK(ws2_32, accept),
     HOOK(ws2_32, bind),
     HOOK(ws2_32, listen),
-    HOOK(ws2_32, select),
+    //HOOK(ws2_32, select),
     HOOK(ws2_32, setsockopt),
     HOOK(ws2_32, ioctlsocket),
     HOOK(ws2_32, closesocket),
     HOOK(ws2_32, shutdown),
 
     HOOK(ws2_32, WSAAccept),
-    HOOK(ws2_32, WSARecv),
-    HOOK(ws2_32, WSARecvFrom),
-    HOOK(ws2_32, WSASend),
-    HOOK(ws2_32, WSASendTo),
+    //HOOK(ws2_32, WSARecv),
+    //HOOK(ws2_32, WSARecvFrom),
+    //HOOK(ws2_32, WSASend),
+    //HOOK(ws2_32, WSASendTo),
     HOOK(ws2_32, WSASocketA),
     HOOK(ws2_32, WSASocketW),
 
-    // HOOK(wsock32, connect),
+    HOOK(wsock32, connect),
     // HOOK(wsock32, send),
     // HOOK(wsock32, recv),
 
@@ -353,17 +375,18 @@ static hook_t g_hooks[] = {
     // Crypto Functions
     //
 
-    HOOK(advapi32, CryptProtectData),
-    HOOK(advapi32, CryptUnprotectData),
-    HOOK(advapi32, CryptProtectMemory),
-    HOOK(advapi32, CryptUnprotectMemory),
-    HOOK(advapi32, CryptDecrypt),
-    HOOK(advapi32, CryptEncrypt),
-    HOOK(advapi32, CryptHashData),
-    HOOK(advapi32, CryptDecodeMessage),
-    HOOK(advapi32, CryptDecryptMessage),
-    HOOK(advapi32, CryptEncryptMessage),
-    HOOK(advapi32, CryptHashMessage),
+    //HOOK(advapi32, CryptProtectData),
+    //HOOK(advapi32, CryptUnprotectData),
+    //HOOK(advapi32, CryptProtectMemory),
+    //HOOK(advapi32, CryptUnprotectMemory),
+    //HOOK(advapi32, CryptDecrypt),
+    //HOOK(advapi32, CryptEncrypt),
+    //HOOK(advapi32, CryptHashData),
+    //HOOK(advapi32, CryptDecodeMessage),
+    //HOOK(advapi32, CryptDecryptMessage),
+    //HOOK(advapi32, CryptEncryptMessage),
+    //HOOK(advapi32, CryptHashMessage),
+    */
 };
 
 // get a random hooking method, except for hook_jmp_direct

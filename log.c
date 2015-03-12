@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "utf8.h"
 #include "log.h"
 #include "bson.h"
+#include "pipe.h"
 
 // the size of the logging buffer
 #define BUFFERSIZE 1024 * 1024
@@ -35,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static CRITICAL_SECTION g_mutex;
 static int g_sock;
+static FILE* g_file;
 static unsigned int g_starttick;
 
 static char g_buffer[BUFFERSIZE];
@@ -44,7 +46,7 @@ static int g_idx;
 static bson g_bson[1];
 static char g_istr[4];
 
-static char logtbl_explained[256] = {0};
+static char logtbl_explained[1024] = {0};
 
 #define LOG_ID_PROCESS 0
 #define LOG_ID_THREAD 1
@@ -60,7 +62,7 @@ void log_flush()
     if(g_idx != 0) {
         int written;
         if(g_sock == INVALID_SOCKET) {
-            written = fwrite(g_buffer, 1, g_idx, stderr);
+            written = fwrite(g_buffer, 1, g_idx, g_file);
         }
         else {
             written = send(g_sock, g_buffer, g_idx, 0);
@@ -93,7 +95,11 @@ static void log_raw(const char *buf, size_t length) {
 */
 
 static void log_raw_direct(const char *buf, size_t length) {
-    if(g_sock == INVALID_SOCKET) return;
+    if(g_sock == INVALID_SOCKET) {
+        fwrite(buf, 1, length, g_file);
+        fflush(g_file);
+        return;
+    }
 
     int sent = 0;
     int r;
@@ -212,6 +218,26 @@ static void log_big_buffer(const char *buf, size_t length) {
     bson_append_binary( g_bson, g_istr, BSON_BIN_BINARY, buf, trunclength );
 }
 
+static void log_buffer_wide(const wchar_t *buf, size_t length) {
+    size_t trunclength = min(length, BUFFER_LOG_MAX);
+
+    if (buf == NULL) {
+        trunclength = 0;
+    }
+
+    bson_append_binary( g_bson, g_istr, BSON_BIN_BINARY, (const char*) buf, trunclength );
+}
+
+static void log_big_buffer_wide(const wchar_t *buf, size_t length) {
+    size_t trunclength = min(length, BUFFER_LOG_MAX_BIG);
+
+    if (buf == NULL) {
+        trunclength = 0;
+    }
+
+    bson_append_binary( g_bson, g_istr, BSON_BIN_BINARY, (const char*) buf, trunclength );
+}
+
 void loq(int index, const char *category, const char *name,
     int is_success, int return_value, const char *fmt, ...)
 {
@@ -287,6 +313,14 @@ void loq(int index, const char *category, const char *name,
             else if(key == 'B' || key == 'D') {
                 (void) va_arg(args, size_t *);
                 (void) va_arg(args, const char *);
+            }
+            else if(key == 'w' || key == 'z') {
+                (void) va_arg(args, size_t);
+                (void) va_arg(args, const wchar_t *);
+            }
+            else if(key == 'W' || key == 'Z') {
+                (void) va_arg(args, size_t *);
+                (void) va_arg(args, const wchar_t *);
             }
             else if(key == 'i') {
                 (void) va_arg(args, int);
@@ -399,6 +433,26 @@ void loq(int index, const char *category, const char *name,
             size_t *len = va_arg(args, size_t *);
             const char *s = va_arg(args, const char *);
             log_big_buffer(s, len == NULL ? 0 : *len);
+        }
+        else if(key == 'w') {
+            size_t len = va_arg(args, size_t);
+            const wchar_t *s = va_arg(args, const wchar_t *);
+            log_buffer_wide(s, len);
+        }
+        else if(key == 'W') {
+            size_t *len = va_arg(args, size_t *);
+            const wchar_t *s = va_arg(args, const wchar_t *);
+            log_buffer_wide(s, len == NULL ? 0 : *len);
+        }
+        else if(key == 'z') {
+            size_t len = va_arg(args, size_t);
+            const wchar_t *s = va_arg(args, const wchar_t *);
+            log_big_buffer_wide(s, len);
+        }
+        else if(key == 'Z') {
+            size_t *len = va_arg(args, size_t *);
+            const wchar_t *s = va_arg(args, const wchar_t *);
+            log_big_buffer_wide(s, len == NULL ? 0 : *len);
         }
         else if(key == 'i') {
             int value = va_arg(args, int);
@@ -554,7 +608,15 @@ void log_init(unsigned int ip, unsigned short port, int debug)
     InitializeCriticalSection(&g_mutex);
 
     if(debug != 0) {
+        wchar_t  buffer[200];
+        char  buffer2[200];
+        int len = swprintf(buffer, 200, L"C:\\%u.bson", GetCurrentProcessId());
+        int len2 = sprintf(buffer2, "C:\\%u.bson", GetCurrentProcessId());
+
+        //pipe("FILE_NEW:%Z", buffer);
+
         g_sock = INVALID_SOCKET;
+        g_file = fopen(buffer2, "wb");
     }
     else {
         WSADATA wsa;
@@ -584,5 +646,12 @@ void log_free()
     log_flush();
     if(g_sock != INVALID_SOCKET) {
         closesocket(g_sock);
+    }
+    else {
+        fclose(g_file);
+
+        wchar_t  buffer[200];
+        int len = swprintf(buffer, 200, L"C:\\%u.bson", GetCurrentProcessId());
+        pipe("FILE_NEW:%Z", buffer);
     }
 }

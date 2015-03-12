@@ -204,8 +204,10 @@ HOOKDEF(NTSTATUS, WINAPI, NtWriteFile,
 ) {
     NTSTATUS ret = Old_NtWriteFile(FileHandle, Event, ApcRoutine, ApcContext,
         IoStatusBlock, Buffer, Length, ByteOffset, Key);
-    LOQ("pb", "FileHandle", FileHandle,
-        "Buffer", IoStatusBlock->Information, Buffer);
+    LOQ("pbll", "FileHandle", FileHandle,
+        "Buffer", IoStatusBlock->Information, Buffer,
+        "OffsetLowPart", ((ByteOffset != 0) ? ByteOffset->LowPart : 0),
+        "OffsetHighPart", ((ByteOffset != 0) ? ByteOffset->HighPart : 0));
     if(NT_SUCCESS(ret)) {
         file_write(FileHandle);
     }

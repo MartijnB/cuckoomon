@@ -141,7 +141,7 @@ HOOKDEF(HINTERNET, WINAPI, InternetOpenUrlA,
     __in  DWORD_PTR dwContext
 ) {
     // Disable cache
-    dwFlags |= INTERNET_FLAG_RELOAD;
+    //dwFlags |= INTERNET_FLAG_RELOAD;
 
     HINTERNET ret = Old_InternetOpenUrlA(hInternet, lpszUrl, lpszHeaders,
         dwHeadersLength, dwFlags, dwContext);
@@ -160,7 +160,7 @@ HOOKDEF(HINTERNET, WINAPI, InternetOpenUrlW,
     __in  DWORD_PTR dwContext
 ) {
     // Disable cache
-    dwFlags |= INTERNET_FLAG_RELOAD;
+    //dwFlags |= INTERNET_FLAG_RELOAD;
 
     HINTERNET ret = Old_InternetOpenUrlW(hInternet, lpszUrl, lpszHeaders,
         dwHeadersLength, dwFlags, dwContext);
@@ -177,7 +177,7 @@ HOOKDEF(HINTERNET, WINAPI, FtpOpenFileA,
     _In_  DWORD_PTR dwContext
 ) {
     // Disable cache
-    dwFlags |= INTERNET_FLAG_RELOAD;
+    //dwFlags |= INTERNET_FLAG_RELOAD;
 
     HINTERNET ret = Old_FtpOpenFileA(hConnect, lpszFileName, dwAccess,
         dwFlags, dwContext);
@@ -194,7 +194,7 @@ HOOKDEF(HINTERNET, WINAPI, FtpOpenFileW,
     _In_  DWORD_PTR dwContext
 ) {
     // Disable cache
-    dwFlags |= INTERNET_FLAG_RELOAD;
+    //dwFlags |= INTERNET_FLAG_RELOAD;
     
     HINTERNET ret = Old_FtpOpenFileW(hConnect, lpszFileName, dwAccess,
         dwFlags, dwContext);
@@ -203,7 +203,7 @@ HOOKDEF(HINTERNET, WINAPI, FtpOpenFileW,
     return ret;
 }
 
-HOOKDEF(HINTERNET, WINAPI, FtpGetFileA,
+HOOKDEF(BOOL, WINAPI, FtpGetFileA,
     _In_  HINTERNET hConnect,
     _In_  LPCTSTR lpszRemoteFile,
     _In_  LPCTSTR lpszNewFile,
@@ -212,7 +212,9 @@ HOOKDEF(HINTERNET, WINAPI, FtpGetFileA,
     _In_  DWORD dwFlags,
     _In_  DWORD_PTR dwContext
 ) {
-    HINTERNET ret = Old_FtpGetFileA(hConnect, lpszRemoteFile, lpszNewFile,
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_FtpGetFileA(hConnect, lpszRemoteFile, lpszNewFile,
         fFailIfExists, dwFlagsAndAttributes, dwFlags, dwContext);
     LOQ("pssll", "InternetHandle", hConnect, 
         "RemoteFile", lpszRemoteFile, 
@@ -222,7 +224,7 @@ HOOKDEF(HINTERNET, WINAPI, FtpGetFileA,
     return ret;
 }
 
-HOOKDEF(HINTERNET, WINAPI, FtpGetFileW,
+HOOKDEF(BOOL, WINAPI, FtpGetFileW,
     _In_  HINTERNET hConnect,
     _In_  LPWSTR lpszRemoteFile,
     _In_  LPWSTR lpszNewFile,
@@ -231,7 +233,9 @@ HOOKDEF(HINTERNET, WINAPI, FtpGetFileW,
     _In_  DWORD dwFlags,
     _In_  DWORD_PTR dwContext
 ) {
-    HINTERNET ret = Old_FtpGetFileW(hConnect, lpszRemoteFile, lpszNewFile,
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_FtpGetFileW(hConnect, lpszRemoteFile, lpszNewFile,
         fFailIfExists, dwFlagsAndAttributes, dwFlags, dwContext);
     LOQ("puull", "InternetHandle", hConnect, 
         "RemoteFile", lpszRemoteFile, 
@@ -241,14 +245,16 @@ HOOKDEF(HINTERNET, WINAPI, FtpGetFileW,
     return ret;
 }
 
-HOOKDEF(HINTERNET, WINAPI, FtpPutFileA,
+HOOKDEF(BOOL, WINAPI, FtpPutFileA,
     _In_  HINTERNET hConnect,
     _In_  LPCTSTR lpszLocalFile,
     _In_  LPCTSTR lpszNewRemoteFile,
     _In_  DWORD dwFlags,
     _In_  DWORD_PTR dwContext
 ) {
-    HINTERNET ret = Old_FtpPutFileA(hConnect, lpszLocalFile, 
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_FtpPutFileA(hConnect, lpszLocalFile, 
         lpszNewRemoteFile, dwFlags, dwContext);
     LOQ("pssl", "InternetHandle", hConnect, 
         "LocalFile", lpszLocalFile,
@@ -257,14 +263,16 @@ HOOKDEF(HINTERNET, WINAPI, FtpPutFileA,
     return ret;
 }
 
-HOOKDEF(HINTERNET, WINAPI, FtpPutFileW,
+HOOKDEF(BOOL, WINAPI, FtpPutFileW,
     _In_  HINTERNET hConnect,
     _In_  LPWSTR lpszLocalFile,
     _In_  LPWSTR lpszNewRemoteFile,
     _In_  DWORD dwFlags,
     _In_  DWORD_PTR dwContext
 ) {
-    HINTERNET ret = Old_FtpPutFileW(hConnect, lpszLocalFile, 
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_FtpPutFileW(hConnect, lpszLocalFile, 
         lpszNewRemoteFile, dwFlags, dwContext);
     LOQ("puul", "InternetHandle", hConnect, 
         "LocalFile", lpszLocalFile,
@@ -273,29 +281,33 @@ HOOKDEF(HINTERNET, WINAPI, FtpPutFileW,
     return ret;
 }
 
-HOOKDEF(HINTERNET, WINAPI, HttpAddRequestHeadersA,
+HOOKDEF(BOOL, WINAPI, HttpAddRequestHeadersA,
     _In_  HINTERNET hConnect,
     _In_  LPCTSTR lpszHeaders,
     _In_  DWORD dwHeadersLength,
     _In_  DWORD dwModifiers
 ) {
-    HINTERNET ret = Old_HttpAddRequestHeadersA(hConnect, lpszHeaders, 
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_HttpAddRequestHeadersA(hConnect, lpszHeaders, 
         dwHeadersLength, dwModifiers);
     if(dwHeadersLength == (DWORD) -1) dwHeadersLength = strlen(lpszHeaders);
-    LOQ("pSp", "InternetHandle", hConnect, 
+    LOQ("pSl", "InternetHandle", hConnect, 
         "Headers", dwHeadersLength, lpszHeaders, "Modifiers", dwModifiers);
     return ret;
 }
 
-HOOKDEF(HINTERNET, WINAPI, HttpAddRequestHeadersW,
+HOOKDEF(BOOL, WINAPI, HttpAddRequestHeadersW,
     _In_  HINTERNET hConnect,
     _In_  LPWSTR lpszHeaders,
     _In_  DWORD dwHeadersLength,
     _In_  DWORD dwModifiers
 ) {
-    HINTERNET ret = Old_HttpAddRequestHeadersW(hConnect, lpszHeaders, 
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_HttpAddRequestHeadersW(hConnect, lpszHeaders, 
         dwHeadersLength, dwModifiers);
-    LOQ("pUp", "InternetHandle", hConnect, 
+    LOQ("pUl", "InternetHandle", hConnect, 
         "Headers", dwHeadersLength, lpszHeaders, "Modifiers", dwModifiers);
     return ret;
 }
@@ -311,7 +323,7 @@ HOOKDEF(HINTERNET, WINAPI, HttpOpenRequestA,
     __in  DWORD_PTR dwContext
 ) {
     // Disable cache
-    dwFlags |= INTERNET_FLAG_RELOAD;
+    //dwFlags |= INTERNET_FLAG_RELOAD;
 
     HINTERNET ret = Old_HttpOpenRequestA(hConnect, lpszVerb, lpszObjectName,
         lpszVersion, lpszReferer, lplpszAcceptTypes, dwFlags, dwContext);
@@ -335,7 +347,7 @@ HOOKDEF(HINTERNET, WINAPI, HttpOpenRequestW,
     __in  DWORD_PTR dwContext
 ) {
     // Disable cache
-    dwFlags |= INTERNET_FLAG_RELOAD;
+    //dwFlags |= INTERNET_FLAG_RELOAD;
 
     HINTERNET ret = Old_HttpOpenRequestW(hConnect, lpszVerb, lpszObjectName,
         lpszVersion, lpszReferer, lplpszAcceptTypes, dwFlags, dwContext);
@@ -383,7 +395,7 @@ HOOKDEF(BOOL, WINAPI, HttpSendRequestW,
     return ret;
 }
 
-HOOKDEF(BOOL, WINAPI, HttpSendRequestEx,
+HOOKDEF(BOOL, WINAPI, HttpSendRequestExA,
     _In_   HINTERNET hRequest,
     _In_   LPINTERNET_BUFFERS lpBuffersIn,
     _Out_  LPINTERNET_BUFFERS lpBuffersOut,
@@ -392,14 +404,46 @@ HOOKDEF(BOOL, WINAPI, HttpSendRequestEx,
 ) {
     IS_SUCCESS_BOOL();
 
-    BOOL ret = Old_HttpSendRequestEx(hRequest, lpBuffersIn, lpBuffersOut,
+    BOOL ret = Old_HttpSendRequestExA(hRequest, lpBuffersIn, lpBuffersOut,
         dwFlags, dwContext);
-    LOQ("pl", "HttpHandle", hRequest, 
-        "Flags", dwFlags);
+    if (ret) {
+        LOQ("pddl", "HttpHandle", hRequest,
+            "Headers", lpBuffersIn->dwHeadersLength, lpBuffersIn->lpcszHeader,
+            "PostData", lpBuffersIn->dwBufferLength, lpBuffersIn->lpvBuffer,
+            "Flags", dwFlags);
+    }
+    else {
+        LOQ("pl", "HttpHandle", hRequest,
+            "Flags", dwFlags);
+    }
     return ret;
 }
 
-HOOKDEF(BOOL, WINAPI, HttpEndRequest,
+HOOKDEF(BOOL, WINAPI, HttpSendRequestExW,
+    _In_   HINTERNET hRequest,
+    _In_   LPINTERNET_BUFFERS lpBuffersIn,
+    _Out_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_   DWORD dwFlags,
+    _In_   DWORD_PTR dwContext
+) {
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_HttpSendRequestExW(hRequest, lpBuffersIn, lpBuffersOut,
+        dwFlags, dwContext);
+    if (ret) {
+        LOQ("pzdl", "HttpHandle", hRequest,
+            "Headers", lpBuffersIn->dwHeadersLength, lpBuffersIn->lpcszHeader,
+            "PostData", lpBuffersIn->dwBufferLength, lpBuffersIn->lpvBuffer,
+            "Flags", dwFlags);
+    }
+    else {
+        LOQ("pl", "HttpHandle", hRequest,
+            "Flags", dwFlags);
+    }
+    return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, HttpEndRequestA,
     _In_       HINTERNET hRequest,
     _Out_opt_  LPINTERNET_BUFFERS lpBuffersOut,
     _In_       DWORD dwFlags,
@@ -407,10 +451,115 @@ HOOKDEF(BOOL, WINAPI, HttpEndRequest,
 ) {
     IS_SUCCESS_BOOL();
 
-    BOOL ret = Old_HttpEndRequest(hRequest, lpBuffersOut, dwFlags, 
+    BOOL ret = Old_HttpEndRequestA(hRequest, lpBuffersOut, dwFlags, 
         dwContext);
     LOQ("pl", "HttpHandle", hRequest, 
         "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, HttpEndRequestW,
+    _In_       HINTERNET hRequest,
+    _Out_opt_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_       DWORD dwFlags,
+    _In_opt_   DWORD_PTR dwContext
+) {
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_HttpEndRequestW(hRequest, lpBuffersOut, dwFlags, 
+        dwContext);
+    LOQ("pl", "HttpHandle", hRequest, 
+        "Flags", dwFlags);
+    return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, HttpQueryInfoA,
+    _In_     HINTERNET hRequest,
+    _In_     DWORD dwInfoLevel,
+    _Inout_  LPVOID lpvBuffer,
+    _Inout_  LPDWORD lpdwBufferLength,
+    _Inout_  LPDWORD lpdwIndex
+) {
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_HttpQueryInfoA(hRequest, dwInfoLevel, lpvBuffer, 
+        lpdwBufferLength, lpdwIndex);
+    if (ret) {
+        LOQ("plD", "HttpHandle", hRequest,
+            "InfoLevel", dwInfoLevel,
+            "Buffer", lpdwBufferLength, lpvBuffer);
+    }
+    else {
+        LOQ("pl", "HttpHandle", hRequest,
+            "InfoLevel", dwInfoLevel);
+    }
+    return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, HttpQueryInfoW,
+    _In_     HINTERNET hRequest,
+    _In_     DWORD dwInfoLevel,
+    _Inout_  LPVOID lpvBuffer,
+    _Inout_  LPDWORD lpdwBufferLength,
+    _Inout_  LPDWORD lpdwIndex
+) {
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_HttpQueryInfoW(hRequest, dwInfoLevel, lpvBuffer, 
+        lpdwBufferLength, lpdwIndex);
+    if (ret) {
+        LOQ("plZ", "HttpHandle", hRequest,
+            "InfoLevel", dwInfoLevel,
+            "Buffer", lpdwBufferLength, lpvBuffer);
+    }
+    else {
+        LOQ("pl", "HttpHandle", hRequest,
+            "InfoLevel", dwInfoLevel);
+    }
+    return ret;
+}
+
+/*
+HOOKDEF(DWORD, WINAPI, InternetConfirmZoneCrossing,
+    _In_  HWND hWnd,
+    _In_  LPTSTR szUrlPrev,
+    _In_  LPTSTR szUrlNew,
+    _In_  BOOL bPost
+) {
+    IS_SUCCESS_ZERO();
+
+    DWORD ret = Old_InternetConfirmZoneCrossing(hWnd, szUrlPrev, szUrlNew, 
+        bPost);
+    LOQ("ss", "UrlPrev", szUrlPrev, "UrlNew", szUrlNew);
+    return ret;
+}
+*/
+
+HOOKDEF(DWORD, WINAPI, InternetConfirmZoneCrossingA,
+    _In_  HWND hWnd,
+    _In_  LPTSTR szUrlPrev,
+    _In_  LPTSTR szUrlNew,
+    _In_  BOOL bPost
+) {
+    IS_SUCCESS_ZERO();
+
+    DWORD ret = Old_InternetConfirmZoneCrossingA(hWnd, szUrlPrev, szUrlNew, 
+        bPost);
+    LOQ("ss", "UrlPrev", szUrlPrev, "UrlNew", szUrlNew);
+    return ret;
+}
+
+HOOKDEF(DWORD, WINAPI, InternetConfirmZoneCrossingW,
+    _In_  HWND hWnd,
+    _In_  LPWSTR szUrlPrev,
+    _In_  LPWSTR szUrlNew,
+    _In_  BOOL bPost
+) {
+    IS_SUCCESS_ZERO();
+
+    DWORD ret = Old_InternetConfirmZoneCrossingW(hWnd, szUrlPrev, szUrlNew, 
+        bPost);
+    LOQ("uu", "UrlPrev", szUrlPrev, "UrlNew", szUrlNew);
     return ret;
 }
 
@@ -429,7 +578,7 @@ HOOKDEF(BOOL, WINAPI, InternetReadFile,
     return ret;
 }
 
-HOOKDEF(BOOL, WINAPI, InternetReadFileEx,
+HOOKDEF(BOOL, WINAPI, InternetReadFileExA,
     _In_   HINTERNET hFile,
     _Out_  LPINTERNET_BUFFERS lpBuffersOut,
     _In_   DWORD dwFlags,
@@ -437,10 +586,41 @@ HOOKDEF(BOOL, WINAPI, InternetReadFileEx,
 ) {
     IS_SUCCESS_BOOL();
 
-    BOOL ret = Old_InternetReadFileEx(hFile, lpBuffersOut, dwFlags, 
+    BOOL ret = Old_InternetReadFileExA(hFile, lpBuffersOut, dwFlags, 
         dwContext);
-    LOQ("pl", "InternetHandle", hFile, 
-        "Flags", dwFlags);
+    if (ret) {
+        LOQ("pdl", "InternetHandle", hFile,
+            //"Headers", lpBuffersOut->dwHeadersLength, lpBuffersOut->lpcszHeader,
+            "Buffer", lpBuffersOut->dwBufferLength, lpBuffersOut->lpvBuffer,
+            "Flags", dwFlags);
+    }
+    else {
+        LOQ("pl", "InternetHandle", hFile,
+            "Flags", dwFlags);
+    }
+    return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, InternetReadFileExW,
+    _In_   HINTERNET hFile,
+    _Out_  LPINTERNET_BUFFERS lpBuffersOut,
+    _In_   DWORD dwFlags,
+    _In_   DWORD_PTR dwContext
+) {
+    IS_SUCCESS_BOOL();
+
+    BOOL ret = Old_InternetReadFileExW(hFile, lpBuffersOut, dwFlags, 
+        dwContext);
+    if (ret) {
+        LOQ("pdl", "InternetHandle", hFile,
+            //"Headers", lpBuffersOut->dwHeadersLength, lpBuffersOut->lpcszHeader,
+            "Buffer", lpBuffersOut->dwBufferLength, lpBuffersOut->lpvBuffer,
+            "Flags", dwFlags);
+    }
+    else {
+        LOQ("pl", "InternetHandle", hFile,
+            "Flags", dwFlags);
+    }
     return ret;
 }
 
